@@ -1,0 +1,40 @@
+
+#loading_maps, #loading_modes
+{
+  float: left;
+  width: 40%;
+  padding: 0px;
+  margin: 20px 5%;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.mode_picker {
+  width: 45%;
+  margin: 1px 2%;
+  display: inline-block;
+}
+
+#mode_a_picker .selectize-input::before
+{
+  content: 'Mode A:  ';
+}
+
+#mode_b_picker .selectize-input::before
+{
+  content: 'Mode B:  ';
+}
+
+.orange
+{
+  color: #C71;
+}
+
+.red
+{
+  color: #C22;
+}
+
+.green
+{
+  color: #2C2;
+}

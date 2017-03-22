@@ -1,0 +1,4 @@
+
+# Don't commit .mat, .map files
+*.mat
+*.map
