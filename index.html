@@ -10,6 +10,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
     <script type="text/javascript" src="tensors.js"></script>
 
+    <script type="text/javascript" src="CPDData.js"></script>
+
 
     <script type="text/javascript" src="examples/reddit-2008.js"></script>
     <script type="text/javascript" src="examples/enron.js"></script>
@@ -21,18 +23,44 @@
 
 <body>
 
-
 <h1> CPD Visualization </h1>
 
 
 Examples:
 <ul>
-  <li> <button onclick="let tensorData = new TensorDataDisplay(ex_reddit_2008)">Reddit-2008</button> </li>
-  <li> <button onclick="let tensorData = new TensorDataDisplay(ex_enron)">Enron</button> </li>
+  <li> <button onclick="new TensorDataDisplay(ex_reddit_2008)">Reddit-2008</button> </li>
+  <li> <button onclick="new TensorDataDisplay(ex_enron)">Enron</button> </li>
 </ul>
 
 
+Add mode: 
+<form id='add_mode'>
+  name: <input type='text', id='mode_name'>
+  matrix: <input type='file' id='mode_matrix'>
+  map: <input type='file' id='mode_map'>
 
+	<input type='submit'>
+</form>
+
+<!-- Adding a mode -->
+<script type='text/javascript'>
+  let buildTensor = new CPDData();
+
+	$(function() {
+		$('#add_mode').on("submit",function(e) {
+			e.preventDefault();
+
+      var name = $('#mode_name').val();
+      var matrix = $('#mode_matrix')[0].files[0];
+      var map = $('#mode_map')[0].files[0];
+
+      buildTensor.addMode(name, matrix, map);
+		});
+	});
+</script>
+
+
+<!-- Plotting area -->
 <nav id='nav'></nav>
 <div id='plotly'></div>
 
