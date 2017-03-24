@@ -1,4 +1,14 @@
 
+// Recursive algorithms for this can blow the call stack.
+function flatten(a){
+    r = []
+    for(var i=0; i<a.length; i++){
+        r.push(a[i]);
+    }
+    return r;
+}
+
+
 // Returns V_q = A_{qr} B_{pr}
 // Assumes A is a q x r matrix, B is p x r
 function tensor_dot(A, B, p)
@@ -7,10 +17,10 @@ function tensor_dot(A, B, p)
     var r_max = A[0].length;
 
     var V = new Array(q_max); // return vector
-    
+
     for (var q = 0; q < q_max; q++) {
         V[q] = 0;
-        for (var r = 0; r < r_max; r++) {    
+        for (var r = 0; r < r_max; r++) {
             V[q] += A[q][r] * B[p][r];
         }
     }
@@ -71,7 +81,7 @@ class TensorDataDisplay
 
 // class constructor
 
-  // config should be an object with: 
+  // config should be an object with:
   // {
   //   display: 'display_div_id',
   //   select: 'select_div_id',
@@ -83,7 +93,7 @@ class TensorDataDisplay
     console.log("Creating TensorDataDisplay class.");
 
     var self = this;
-    
+
     this.modes = {};
     this.maps = {};
 
@@ -117,7 +127,7 @@ class TensorDataDisplay
           <i class='fa fa-cloud fa-stack-2x'></i>
           <i class='fa fa-arrow-down fa-stack-1x fa-inverse'></i>
         </span>
-        Loading modes... (this may take a while)
+        Loading matrices... (this may take a while)
         <ul></ul>
         <i class='fa fa-snowflake-o fa-spin fa-2x fa-fw'></i>
       </div>
@@ -133,7 +143,7 @@ class TensorDataDisplay
     // parse CSV files (async)
     this.dataURLs.forEach(function(el) {
       papaparse_matrix(el.map, function(data) {
-        self.maps[el.map] = [].concat.apply([], data); // flattened array
+        self.maps[el.map] = flatten(data);
         var text = el.name + ' map (' + Object.keys(self.maps).length + '/' + self.dataURLs.length + ')';
         self.updateLoadingDisplay({
           div: '#loading_maps',
@@ -142,7 +152,7 @@ class TensorDataDisplay
       });
       papaparse_matrix(el.mode, function(data) {
         self.modes[el.mode] = data;
-        var text = el.name + ' mode (' + Object.keys(self.modes).length + '/' + self.dataURLs.length + ')';
+        var text = el.name + ' matrix (' + Object.keys(self.modes).length + '/' + self.dataURLs.length + ')';
         self.updateLoadingDisplay({
           div: '#loading_modes',
           text: text,
@@ -150,12 +160,12 @@ class TensorDataDisplay
       });
     });
 
-    // recurse until all maps are loaded (maps object length = config data length) 
+    // recurse until all maps are loaded (maps object length = config data length)
     async_recurse_until_test(100, function() {
       return Object.keys(self.maps).length >= self.dataURLs.length;
     }, this.finalizeLoadingDisplay, {div: '#loading_maps', text: 'maps'});
-    
-    // recurse until all modes are loaded (modes object length = config data length) 
+
+    // recurse until all modes are loaded (modes object length = config data length)
     async_recurse_until_test(100, function() {
       return Object.keys(self.modes).length >= self.dataURLs.length;
     }, this.finalizeLoadingDisplay, {div: '#loading_modes', text: 'modes'});
