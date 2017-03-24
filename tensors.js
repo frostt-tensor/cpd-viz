@@ -1,11 +1,10 @@
 
 // Recursive algorithms for this can blow the call stack.
-function flatten(a){
-    r = []
+function flatten_map(a){
     for(var i=0; i<a.length; i++){
-        r.push(a[i]);
+        a[i] = a[i][0];
     }
-    return r;
+    return a;
 }
 
 
@@ -143,7 +142,7 @@ class TensorDataDisplay
     // parse CSV files (async)
     this.dataURLs.forEach(function(el) {
       papaparse_matrix(el.map, function(data) {
-        self.maps[el.map] = flatten(data);
+        self.maps[el.map] = flatten_map(data);
         var text = el.name + ' map (' + Object.keys(self.maps).length + '/' + self.dataURLs.length + ')';
         self.updateLoadingDisplay({
           div: '#loading_maps',
