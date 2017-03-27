@@ -52,6 +52,7 @@ class CPDDisplay
 
     // build plotting div
 
+    // TODO: take this as input
     // plotModes[0] = x-axis, plotModes[1] = y-axis
     this.plotModes = [0, 1];
     if(this.cpd.getNumModes() == 1) {

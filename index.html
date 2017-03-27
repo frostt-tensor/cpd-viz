@@ -24,11 +24,16 @@
 
 <h1> CPD Visualization </h1>
 
+<script type='text/javascript'>
+  // just get global scope for examples to access
+  var cpd = null;
+</script>
+
 
 Examples:
 <ul>
-  <li> <button onclick="new TensorDataDisplay(ex_reddit_2008)">Reddit-2008</button> </li>
-  <li> <button onclick="new TensorDataDisplay(ex_enron)">Enron</button> </li>
+  <li> <button onclick='cpd.addCustomConfig(ex_reddit_2008.modes)'>Reddit-2008</button> </li>
+  <li> <button onclick='cpd.addCustomConfig(ex_enron.modes)'>Enron</button> </li>
 </ul>
 
 
@@ -41,7 +46,7 @@ Examples:
 <!-- CPD  -->
 <script type='text/javascript'>
   $(document).ready(function() {
-    var cpd = new CPDData('cpd_build');
+    cpd = new CPDData('cpd_build');
 
     $('#plotbtn').bind('click', function() {new CPDDisplay(cpd, 'cpd_viz')});
   });

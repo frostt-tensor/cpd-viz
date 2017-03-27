@@ -94,6 +94,36 @@ class CPDData
 
 
 
+  //
+  // configModes should be a list of structures with fields:
+  // configModes = [
+  //   {
+  //      'name',
+  //      'matrix_url',
+  //      'map_url',
+  //   },
+  //   ...
+  // ]
+  //
+  addCustomConfig(configModes)
+  {
+    var text = "Continue loading?\nWarning to mobile users: this may use ~100MB of data.";
+    if(confirm(text) != true) {
+      $(this.display).empty().append("Data not loaded. Refresh the page to try again.");
+      return;
+    }
+
+    for(var m=0; m < configModes.length; ++m) {
+      var name = configModes[m].name;
+      var matrixURL = configModes[m].matrix_url;
+      var mapURL = configModes[m].map_url;
+
+      this._registerMode(name, matrixURL, mapURL);
+    }
+  }
+
+
+
 
 
 
@@ -101,19 +131,30 @@ class CPDData
   // Private functions
   //
 
+  // add a new form from the cpd_build form.
+  _addFormMode()
+  {
+    var name      = $(this.divName + ' .mode_name').val();
+    var matrixLoc = $(this.divName + ' .mode_matrix')[0].files[0];
+    var mapLoc    = $(this.divName + ' .mode_map')[0].files[0];
+
+    // reset form
+    $(this.divName + ' .mode_name').val('');
+    $(this.divName + ' .mode_matrix').val('');
+    $(this.divName + ' .mode_map').val('');
+
+    this._registerMode(name, matrixLoc, mapLoc);
+  }
+
+
+
   // TODO: ensure matrix and map are the same length
-  _addMode()
+  _registerMode(name, matrixLoc, mapLoc)
   {
     var self = this;
 
-    var name      = $(self.divName + ' .mode_name').val();
-    var matrixLoc = $(self.divName + ' .mode_matrix')[0].files[0];
-    var mapLoc    = $(self.divName + ' .mode_map')[0].files[0];
-
-    // reset form
-    $(self.divName + ' .mode_name').val('');
-    $(self.divName + ' .mode_matrix').val('');
-    $(self.divName + ' .mode_map').val('');
+    console.log('Registering mode with {name: ' + name + ' matrix: ' + 
+        matrixLoc + ' mapLoc: ' + mapLoc + '}.');
 
     if(!name) {
       name = 'Mode ' + (self.numModes + 1);
@@ -126,13 +167,23 @@ class CPDData
 
     console.log('Adding mode ' + name);
 
+    // Push empty values -- these will be written to as data is loaded async.
     self.names.push(name);
+    self.factors.push([]);
+    self.maps.push([]);
+    var curr_mode = self.numModes;
+    self.numModes++;
+
+
+    //
+    // BEGIN ASYNC
+    //
 
     // Load the matrix
-    // TOOD: We should instead build a new row and pass that to the callback.
+    // TODO: We should instead build a new row and pass that to the callback.
     // As it loads, give it the loading snowflake...
     parse_matrix(matrixLoc, function(data) {
-      self.factors.push(data);
+      self.factors[curr_mode] = data;
 
       if(self.rank == 0) {
         self.rank = data[0].length;
@@ -148,13 +199,9 @@ class CPDData
     // Load the map, or just null if unspecified.
     if(mapLoc) {
       parse_matrix(mapLoc, function(data) {
-        self.maps.push(flatten_map(data));
+        self.maps[curr_mode] = flatten_map(data);
       });
-    } else {
-      self.maps.push(null)
     }
-
-    self.numModes++;
   }
 
 
@@ -196,7 +243,7 @@ class CPDData
         <input class='add_mode' type='submit' value='Add mode'>
       </form>
     `);
-    $(self.divName + ' .add_mode').bind('click', function() {self._addMode()});
+    $(self.divName + ' .add_mode').bind('click', function() {self._addFormMode()});
 
     $(self.divName).append(`
       <table class='cpd_tbl'>
