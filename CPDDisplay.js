@@ -58,7 +58,8 @@ class CPDDisplay
       this.plotModes[1] = 0;
     }
 
-    this._buildModeSelection();
+    this._buildModeSelection(); // which modes to plot
+    this._buildProjectionSelection(); // which values to plot
   }
 
 
@@ -67,31 +68,21 @@ class CPDDisplay
   //
 
   // axis=0 = x-axis, axis=1, y-axis
-  setPlotMode(axis, modeName)
+  setPlotMode(axis, modeIdx)
   {
     if(axis > this.plotModes.length) {
       alert('Axis: ' + axis + ' invalid.');
       return;
     }
-
-    // Search through CPD modes and find one with a matching name.
-    var found = false;
-    for(var m=0; m < this.cpd.getNumModes(); ++m) {
-      var mode = this.cpd.getMode(m);
-      if(mode.name == modeName) {
-        this.plotModes[axis] = m;
-        console.log('Setting plotMode[' + axis + ']: ' + m);
-        found = true;
-        break;
-      }
-    }
-
-    if(!found) {
-      alert('ERROR: could not find mode "' + modeName + '".');
+    if(modeIdx > this.cpd.getNumModes()) {
+      alert('Mode: ' + modeIdx + ' invalid.');
       return;
     }
 
-    this._buildModeSelection();
+    this.plotModes[axis] = modeIdx;
+    console.log('Setting plotMode[' + axis + ']: ' + modeIdx);
+
+    this._buildProjectionSelection();
   }
 
 
@@ -112,6 +103,7 @@ class CPDDisplay
 
   _buildModeSelection()
   {
+    var self = this;
     console.log('CPDDisplay: Building selectize.');
 
     if(this.plotModes.length != 2) {
@@ -122,35 +114,64 @@ class CPDDisplay
     // prepare nav and plotting region
     $(this.div).empty().append(`
       <nav class='cpd_nav'>
-        <div id='mode_a_picker' class='mode_picker'></div>
-        <div id='mode_b_picker' class='mode_picker'></div>
+        x-axis: <div id='mode_a_picker' class='mode_picker'></div>
+        y-axis: <div id='mode_b_picker' class='mode_picker'></div>
         <div id='plot_picker'></div>
       </nav>
       <div id='plotly'></div>
     `);
 
+
+    // selectize to pick what modes to use
+    var mode_options = new Array(self.cpd.getNumModes());
+    for(var i=0; i < self.cpd.getNumModes(); i++) {
+      mode_options[i] = { value: i, label: self.cpd.getMode(i).name };
+    }
+
+    $('.mode_picker').empty().append('<select></select>');
+    var select_x = $('#mode_a_picker select:last-child').selectize({
+      options: mode_options,
+      labelField: 'label',
+      valueField: 'value',
+      maxItems: 1,
+      items: [self.getPlotMode(0)],
+      searchField: ['label', 'value'],
+      onChange: function(value) {
+        self.setPlotMode(0, value);
+      },
+    });
+    var select_y = $('#mode_b_picker select:last-child').selectize({
+      options: mode_options,
+      labelField: 'label',
+      valueField: 'value',
+      maxItems: 1,
+      items: [self.getPlotMode(1)],
+      searchField: ['label', 'value'],
+      onChange: function(value) {
+        self.setPlotMode(1, value);
+      },
+    });
+  }
+
+
+  _buildProjectionSelection()
+  {
+    var self = this;
     this.x_mode = this.cpd.getMode(this.plotModes[0]);
     this.y_mode = this.cpd.getMode(this.plotModes[1]);
 
     // fill in selectize options
     var picker_div = this.div + ' #plot_picker';
     $(picker_div).empty();
-    this._buildSelectize(picker_div, this.y_mode);
-  }
 
-
-  _buildSelectize(div_select, mode)
-  {
-    var self = this;
-
-    var options = new Array(mode.dim);
-    for(var i=0; i < mode.dim; ++i) {
-      options[i] = { value: i, label: mode.map[i] };
+    var options = new Array(self.y_mode.dim);
+    for(var i=0; i < self.y_mode.dim; ++i) {
+      options[i] = { value: i, label: self.y_mode.map[i] };
     }
 
-    $(div_select).append('<select></select>');
+    $(picker_div).append('<select></select>');
 
-    var select = $(div_select + ' select:last-child').selectize({
+    var select = $(picker_div + ' select:last-child').selectize({
       options: options,
       labelField: 'label',
       valueField: 'value',

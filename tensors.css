@@ -16,12 +16,10 @@
 
 #mode_a_picker .selectize-input::before
 {
-  content: 'Mode A:  ';
 }
 
 #mode_b_picker .selectize-input::before
 {
-  content: 'Mode B:  ';
 }
 
 .orange
