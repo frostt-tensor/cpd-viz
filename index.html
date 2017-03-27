@@ -8,10 +8,9 @@
     <script src="hosted/papaparse.min.js"></script> <!-- hosted locally to avoid -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
-    <script type="text/javascript" src="tensors.js"></script>
 
     <script type="text/javascript" src="CPDData.js"></script>
-
+    <script type="text/javascript" src="CPDDisplay.js"></script>
 
     <script type="text/javascript" src="examples/reddit-2008.js"></script>
     <script type="text/javascript" src="examples/enron.js"></script>
@@ -33,36 +32,20 @@ Examples:
 </ul>
 
 
-Add mode: 
-<form id='add_mode'>
-  name: <input type='text', id='mode_name'>
-  matrix: <input type='file' id='mode_matrix'>
-  map: <input type='file' id='mode_map'>
+<!-- CPD stats + plotting -->
+<div id='cpd_build'></div>
 
-	<input type='submit'>
-</form>
+<input type='button' value='Plot' id='plotbtn'>
+<div id='cpd_viz'></div>
 
-<!-- Adding a mode -->
+<!-- CPD  -->
 <script type='text/javascript'>
-  let buildTensor = new CPDData();
+  $(document).ready(function() {
+    var cpd = new CPDData('cpd_build');
 
-	$(function() {
-		$('#add_mode').on("submit",function(e) {
-			e.preventDefault();
-
-      var name = $('#mode_name').val();
-      var matrix = $('#mode_matrix')[0].files[0];
-      var map = $('#mode_map')[0].files[0];
-
-      buildTensor.addMode(name, matrix, map);
-		});
-	});
+    $('#plotbtn').bind('click', function() {new CPDDisplay(cpd, 'cpd_viz')});
+  });
 </script>
-
-
-<!-- Plotting area -->
-<nav id='nav'></nav>
-<div id='plotly'></div>
 
 </body>
 </html>

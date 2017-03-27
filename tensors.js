@@ -1,50 +1,10 @@
 
 
 
-// parse matrix at url, apply callback to data
-// Papa.parse call is async.
-function papaparse_matrix(url, callback)
-{
-  console.log('Loading ' + url);
-
-  Papa.parse(url, {
-    download: true,
-    delimiter: ' ',
-    worker: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-
-      // Remove last column if empty. Happens when lines have trailing spaces.
-      if(results.data[0].slice(-1) == '') {
-        for(var row=0; row < results.data.length; ++row) {
-          results.data[row].pop();
-        }
-      }
-
-      // Make a note in the console when done
-      console.log("Loaded data array of length: "
-        + results.data.length + ", rows of length: "
-        + results.data[0].length
-      );
-
-      // add to array
-      callback(results.data);
-    }
-  });
-}
-
-
-// Recursive algorithms for this can blow the call stack.
-function flatten_map(a){
-    for(var i=0; i<a.length; i++){
-        a[i] = a[i][0];
-    }
-    return a;
-}
-
-
+// Matrix-vector multiplication.
 // Returns V_q = A_{qr} B_{pr}
 // Assumes A is a q x r matrix, B is p x r
+// TODO: Switch to a numerical JS library?
 function tensor_dot(A, B, p)
 {
     var q_max = A.length;
