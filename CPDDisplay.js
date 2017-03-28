@@ -115,8 +115,8 @@ class CPDDisplay
     // prepare nav and plotting region
     $(this.div).empty().append(`
       <nav class='cpd_nav'>
-        x-axis: <div id='mode_a_picker' class='mode_picker'></div>
-        y-axis: <div id='mode_b_picker' class='mode_picker'></div>
+        <div> x-axis: <span id='mode_a_picker' class='mode_picker'></span></div>
+        <div> y-axis: <span id='mode_b_picker' class='mode_picker'></span></div>
         <div id='plot_picker'></div>
       </nav>
       <div id='plotly'></div>

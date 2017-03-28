@@ -131,9 +131,9 @@ class CPDData
       return;
     }
 
-    this.names   = this.names.splice(modeIdx, 1);
-    this.maps    = this.maps.splice(modeIdx, 1);
-    this.factors = this.factors.splice(modeIdx, 1);
+    this.names.splice(modeIdx, 1);
+    this.maps.splice(modeIdx, 1);
+    this.factors.splice(modeIdx, 1);
 
     this.numModes--;
     this._renderModeTable();
