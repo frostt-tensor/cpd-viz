@@ -43,7 +43,7 @@ function normalize(V)
 
 class CPDDisplay
 {
-  constructor(cpd, divID)
+  constructor(cpd, divID, initialPlotModes)
   {
     console.log('Constructing CPDDisplay, attaching to ' + divID + '.');
     if(cpd.getNumModes() == 0) {
@@ -57,12 +57,8 @@ class CPDDisplay
 
     // build plotting div
 
-    // TODO: take this as input
     // plotModes[0] = x-axis, plotModes[1] = y-axis
-    this.plotModes = [0, 1];
-    if(this.cpd.getNumModes() == 1) {
-      this.plotModes[1] = 0;
-    }
+    this.plotModes = this.cpd.bestPlotModes();
 
     this._buildModeSelection(); // which modes to plot
     this._buildProjectionSelection(); // which values to plot
@@ -182,6 +178,7 @@ class CPDDisplay
       labelField: 'label',
       valueField: 'value',
       maxItems: null,
+      closeAfterSelect: true,
       searchField: ['label', 'value'],
       placeholder: 'Choose something to plot... (type to search)',
       onChange: function(value) {

@@ -32,8 +32,8 @@
 
 Examples:
 <ul>
-  <li> <button onclick='cpd.addCustomConfig(ex_reddit_2008.modes)'>Reddit-2008</button> </li>
-  <li> <button onclick='cpd.addCustomConfig(ex_enron.modes)'>Enron</button> </li>
+  <li> <button onclick='cpd.clear(); cpd.addCustomConfig(ex_reddit_2008)'>Reddit-2008</button> </li>
+  <li> <button onclick='cpd.clear(); cpd.addCustomConfig(ex_enron)'>Enron</button> </li>
 </ul>
 
 
@@ -48,7 +48,9 @@ Examples:
   $(document).ready(function() {
     cpd = new CPDData('cpd_build');
 
-    $('#plotbtn').bind('click', function() {new CPDDisplay(cpd, 'cpd_viz')});
+    $('#plotbtn').bind('click', function() {
+      var plot = new CPDDisplay(cpd, 'cpd_viz')
+    });
   });
 </script>
 

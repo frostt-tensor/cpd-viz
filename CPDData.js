@@ -50,8 +50,7 @@ class CPDData
 
     this.divName = '#' + divName;
 
-
-    this._clearCPD();
+    this.clear();
 
     this._buildModeTable();
   }
@@ -61,6 +60,18 @@ class CPDData
   //
   // Public interface
   //
+
+  clear()
+  {
+    this.rank = 0;
+    this.numModes = 0;
+
+    this.names   = new Array();
+    this.maps    = new Array();
+    this.factors = new Array();
+
+    this.plotModes = [0, 0];
+  }
 
   getNumModes()
   {
@@ -91,17 +102,20 @@ class CPDData
 
 
   //
-  // configModes should be a list of structures with fields:
-  // configModes = [
-  //   {
-  //      'name',
-  //      'matrix_url',
-  //      'map_url',
-  //   },
-  //   ...
-  // ]
+  // config should be a structure with at least a list of structures with fields:
+  // config = {
+  //   modes : [
+  //     {
+  //        'name',
+  //        'matrix_url',
+  //        'map_url',
+  //     },
+  //     ...
+  //   ],
   //
-  addCustomConfig(configModes)
+  //   plotModes = [0, 6]  (optional) list of interesting modes to plot
+  //
+  addCustomConfig(config)
   {
     var text = "Continue loading?\nWarning to mobile users: this may use ~100MB of data.";
     if(confirm(text) != true) {
@@ -109,12 +123,16 @@ class CPDData
       return;
     }
 
-    for(var m=0; m < configModes.length; ++m) {
-      var name = configModes[m].name;
-      var matrixURL = configModes[m].matrix_url;
-      var mapURL = configModes[m].map_url;
+    for(var m=0; m < config.modes.length; ++m) {
+      var name = config.modes[m].name;
+      var matrixURL = config.modes[m].matrix_url;
+      var mapURL = config.modes[m].map_url;
 
       this._registerMode(name, matrixURL, mapURL);
+    }
+
+    if(config.plotModes) {
+      this.plotModes = config.plotModes;
     }
   }
 
@@ -136,12 +154,17 @@ class CPDData
 
     // If we have removed the last mode, forget things such as rank.
     if(this.numModes == 0) {
-      this._clearCPD();
+      this.clear();
     }
     this._renderModeTable();
   }
 
 
+  // Recommended plot modes (may be none!)
+  bestPlotModes()
+  {
+    return this.plotModes;
+  }
 
 
 
@@ -149,18 +172,6 @@ class CPDData
   //
   // Private functions
   //
-
-  // A constructor for the CPD-specific data.
-  _clearCPD()
-  {
-    this.rank = 0;
-    this.numModes = 0;
-
-    this.names   = new Array();
-    this.maps    = new Array();
-    this.factors = new Array();
-  }
-
 
   // add a new form from the cpd_build form.
   _addFormMode()
