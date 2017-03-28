@@ -42,6 +42,17 @@ function parse_matrix(url, callback)
 
 
 
+
+
+//
+// Possible modifiers for modes.
+//
+var modeModifiers = [
+  { mod: 'temporal' }, // The data is temporal, meaning it should not be sorted
+  { mod: 'prune'}      // Discrete values which are expected to be sparse
+];
+
+
 class CPDData
 {
   constructor(divName)
@@ -69,6 +80,7 @@ class CPDData
     this.names   = new Array();
     this.maps    = new Array();
     this.factors = new Array();
+    this.mods    = new Array();
 
     this.plotModes = [0, 0];
   }
@@ -93,7 +105,8 @@ class CPDData
       name   : this.names[mode],
       matrix : this.factors[mode],
       map    : this.maps[mode],
-      dim    : this.factors[mode].length
+      dim    : this.factors[mode].length,
+      mods   : this.mods[mode]
     };
 
     return dict;
@@ -109,6 +122,7 @@ class CPDData
   //        'name',
   //        'matrix_url',
   //        'map_url',
+  //        'modifiers',  (optional) list of modeModifiers
   //     },
   //     ...
   //   ],
@@ -127,8 +141,9 @@ class CPDData
       var name = config.modes[m].name;
       var matrixURL = config.modes[m].matrix_url;
       var mapURL = config.modes[m].map_url;
+      var mods   = config.modes[m].modifiers;
 
-      this._registerMode(name, matrixURL, mapURL);
+      this._registerMode(name, matrixURL, mapURL, mods);
     }
 
     if(config.plotModes) {
@@ -149,6 +164,7 @@ class CPDData
     this.names.splice(modeIdx, 1);
     this.maps.splice(modeIdx, 1);
     this.factors.splice(modeIdx, 1);
+    this.mods.split(modeIdx, 1);
 
     this.numModes--;
 
@@ -164,6 +180,35 @@ class CPDData
   bestPlotModes()
   {
     return this.plotModes;
+  }
+
+  setModeModifiers(modeIdx, mods)
+  {
+    var self = this;
+    if(modeIdx >= self.numModes) {
+      alert('Cannot modify mode ' + modeIdx + '. Have only' + self.numModes+'.');
+      return;
+    }
+
+    console.log('Setting mods for mode ' + modeIdx + ' to ' + mods);
+
+    // clear and set
+    self.mods[modeIdx] = {};
+    mods.forEach(function(mod) { self.mods[modeIdx][mod] = true; });
+  }
+
+  getModeModifierList(modeIdx)
+  {
+    if(modeIdx >= this.numModes) {
+      alert('Cannot access mode ' + modeIdx + '. Have only' + this.numModes+'.');
+      return null;
+    }
+
+    var x = [];
+    for(var key in this.mods[modeIdx]) {
+      x.push(key);
+    }
+    return x;
   }
 
 
@@ -191,7 +236,7 @@ class CPDData
 
 
   // TODO: ensure matrix and map are the same length
-  _registerMode(name, matrixLoc, mapLoc)
+  _registerMode(name, matrixLoc, mapLoc, mods)
   {
     var self = this;
 
@@ -220,10 +265,15 @@ class CPDData
       self.maps.push(null);
     }
 
+    if(mods) {
+      self.mods.push(mods);
+    } else {
+      self.mods.push({});
+    }
+
     var curr_mode = self.numModes;
     self.numModes++;
     self._renderModeTable('tblModes');
-
 
     //
     // BEGIN ASYNC
@@ -311,14 +361,34 @@ class CPDData
       }
       tr_string += '</td>';
 
+      // Modifiers
+      tr_string += '<td>';
+      tr_string += "<select id='modMode" + mode + "'></select>";
+      tr_string += '</td>';
+
       // Delete button
-      tr_string += "<td> <button id=rmMode" + mode + "><i class='fa fa-trash fa-fw'></i></button> </td>";
+      tr_string += "<td> <button id='rmMode" + mode + "'><i class='fa fa-trash fa-fw'></i></button> </td>";
       tr_string += '</tr>';
 
       $(tbl_body).append(tr_string);
+
+      // Fill in modifier selection
+      var select = $('#modMode' + mode).selectize({
+        options: modeModifiers,
+        labelField: 'mod',
+        valueField: 'mod',
+        maxItems: null,
+        items: self.getModeModifierList(mode),
+        closeAfterSelect: true,
+        onChange: function(values) {
+          self.setModeModifiers(mode, values);
+        }
+      });
+
+      // Bind the delete mode button
       $(cpd.divName + ' #rmMode' + mode).bind('click', function() {
           cpd.delMode(mode)});
-    });
+    }); // foreach row in mode table
   }
 
 
@@ -346,6 +416,7 @@ class CPDData
             <th> Length </th>
             <th> Matrix </th>
             <th> Map </th>
+            <th> Modifiers </th>
             <th> </th>
           </tr>
         </thead>

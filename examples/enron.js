@@ -12,21 +12,25 @@ var ex_enron= {
       name: 'senders',
       matrix_url: enron_host_url + 'mode1.mat',
       map_url: enron_host_url + 'mode-1-senders.map',
+      modifiers: { prune : true}
     },
     {
       name: 'receivers',
       matrix_url: enron_host_url + 'mode2.mat',
       map_url: enron_host_url + 'mode-2-receivers.map',
+      modifiers: { prune : true}
     },
     {
       name: 'words',
       matrix_url: enron_host_url + 'mode3.mat',
       map_url: enron_host_url + 'mode-3-words.map',
+      modifiers: { prune : true}
     },
     {
       name: 'dates',
       matrix_url: enron_host_url + 'mode4.mat',
       map_url: enron_host_url + 'mode-4-dates.map',
+      modifiers: { temporal : true}
     }
   ],
 };

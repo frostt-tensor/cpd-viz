@@ -11,22 +11,26 @@ var ex_reddit_2008 = {
     {
       name: 'dates',
       map_url: reddit_host_url + 'mode-1-dates.map',
-      matrix_url: reddit_host_url + 'mode1.mat'
+      matrix_url: reddit_host_url + 'mode1.mat',
+      modifiers: { temporal : true }
     },
     { // users
       name: 'users',
       map_url: reddit_host_url + 'mode-2-users.map',
-      matrix_url: reddit_host_url + 'mode2.mat'
+      matrix_url: reddit_host_url + 'mode2.mat',
+      modifiers: { prune : true }
     },
     { // subreddits
       name: 'subreddits',
       map_url: reddit_host_url + 'mode-3-subreddits.map',
-      matrix_url: reddit_host_url + 'mode3.mat'
+      matrix_url: reddit_host_url + 'mode3.mat',
+      modifiers: { prune : true }
     },
     { // words
       name: 'words',
       map_url: reddit_host_url + 'mode-4-words.map',
-      matrix_url: reddit_host_url + 'mode4.mat'
+      matrix_url: reddit_host_url + 'mode4.mat',
+      modifiers: { prune : true }
     }
   ],
 };

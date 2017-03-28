@@ -201,10 +201,15 @@ class CPDDisplay
       var x_vals = x_mode.map;
       var y_vals = normalize(matvec(x_mode.matrix, y_vec));
 
+      var plot_type = 'bar';
+      if(x_mode.mods.temporal) {
+        plot_type = 'scatter';
+      }
+
       var trace = {
         x: x_vals,
         y: y_vals,
-        type: 'scatter',
+        type: plot_type,
         name: y_mode.map[el],
       };
 
