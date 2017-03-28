@@ -50,12 +50,8 @@ class CPDData
 
     this.divName = '#' + divName;
 
-    this.rank = 0;
-    this.numModes = 0;
 
-    this.names   = new Array();
-    this.maps    = new Array();
-    this.factors = new Array();
+    this._clearCPD();
 
     this._buildModeTable();
   }
@@ -122,6 +118,7 @@ class CPDData
     }
   }
 
+
   delMode(modeIdx)
   {
     console.log('Removing mode ' + modeIdx);
@@ -136,6 +133,11 @@ class CPDData
     this.factors.splice(modeIdx, 1);
 
     this.numModes--;
+
+    // If we have removed the last mode, forget things such as rank.
+    if(this.numModes == 0) {
+      this._clearCPD();
+    }
     this._renderModeTable();
   }
 
@@ -147,6 +149,18 @@ class CPDData
   //
   // Private functions
   //
+
+  // A constructor for the CPD-specific data.
+  _clearCPD()
+  {
+    this.rank = 0;
+    this.numModes = 0;
+
+    this.names   = new Array();
+    this.maps    = new Array();
+    this.factors = new Array();
+  }
+
 
   // add a new form from the cpd_build form.
   _addFormMode()
@@ -186,10 +200,18 @@ class CPDData
 
     // Push empty values -- these will be written to as data is loaded async.
     self.names.push(name);
-    self.factors.push([]);
-    self.maps.push([]);
+    self.factors.push('loading');
+
+    // Maps optional
+    if(mapLoc) {
+      self.maps.push('loading');
+    } else {
+      self.maps.push(null);
+    }
+
     var curr_mode = self.numModes;
     self.numModes++;
+    self._renderModeTable('tblModes');
 
 
     //
@@ -206,17 +228,18 @@ class CPDData
         self.rank = data[0].length;
       } else {
         if(self.rank != data[0].length) {
-          alert('Error! expecting matrix of rank ' + self.rank);
+          alert('Error! expecting matrix of rank ' + self.rank + '. Found ' + data[0].length);
         }
       }
 
       self._renderModeTable('tblModes');
     });
 
-    // Load the map, or just null if unspecified.
+    // Load the map if provided.
     if(mapLoc) {
       parse_matrix(mapLoc, function(data) {
         self.maps[curr_mode] = flatten_map(data);
+        self._renderModeTable('tblModes');
       });
     }
   }
@@ -246,10 +269,39 @@ class CPDData
     tbl_rows.forEach(function(cpd, mode) {
       var tr_string = '<tr>';
       tr_string += '<td>' + cpd.names[mode] + '</td>';
-      tr_string += '<td>' + cpd.factors[mode].length + '</td>';
-      tr_string += '<td>' + 0 + '</td>';
-      tr_string += '<td>' + 0 + '</td>';
-      tr_string += '<td> <input type="button" id="rmMode' + mode + '" value="x"> </td>';
+
+      tr_string += '<td>';
+      if(cpd.factors[mode] == 'loading') {
+        tr_string += '-';
+      } else {
+        tr_string += cpd.factors[mode].length;
+      }
+      tr_string += '</td>';
+
+      // display loading or OK symbols
+
+      // Matrices
+      tr_string += '<td>';
+      if(cpd.factors[mode] == 'loading') {
+        tr_string += "<i class='fa fa-snowflake-o fa-spin fa-fw'></i>";
+      } else {
+        tr_string += "<i class='fa fa-check fa-fw'></i>";
+      }
+      tr_string += '</td>';
+
+      // Maps
+      tr_string += '<td>';
+      if(cpd.maps[mode] == 'loading') {
+        tr_string += "<i class='fa fa-snowflake-o fa-spin fa-fw'></i>";
+      } else if(cpd.maps[mode] == null) {
+        tr_string += '-';
+      } else {
+        tr_string += "<i class='fa fa-check fa-fw'></i>";
+      }
+      tr_string += '</td>';
+
+      // Delete button
+      tr_string += "<td> <button id=rmMode" + mode + "><i class='fa fa-trash fa-fw'></i></button> </td>";
       tr_string += '</tr>';
 
       $(tbl_body).append(tr_string);
@@ -283,7 +335,7 @@ class CPDData
             <th> Length </th>
             <th> Matrix </th>
             <th> Map </th>
-            <th> Remove? </th>
+            <th> </th>
           </tr>
         </thead>
         <tbody>

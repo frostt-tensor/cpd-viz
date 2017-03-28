@@ -46,6 +46,11 @@ class CPDDisplay
   constructor(cpd, divID)
   {
     console.log('Constructing CPDDisplay, attaching to ' + divID + '.');
+    if(cpd.getNumModes() == 0) {
+      console.log('ERROR: attempting to plot empty CPD.');
+      alert('CPD must be non-empty.');
+      return;
+    }
 
     this.cpd = cpd;
     this.div = '#' + divID;
@@ -116,7 +121,7 @@ class CPDDisplay
     $(this.div).empty().append(`
       <nav class='cpd_nav'>
         <div> x-axis: <span id='mode_a_picker' class='mode_picker'></span></div>
-        <div> y-axis: <span id='mode_b_picker' class='mode_picker'></span></div>
+        <div> project: <span id='mode_b_picker' class='mode_picker'></span></div>
         <div id='plot_picker'></div>
       </nav>
       <div id='plotly'></div>
