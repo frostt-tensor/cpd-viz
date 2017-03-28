@@ -26,14 +26,26 @@
 
 <script type='text/javascript'>
   // just get global scope for examples to access
-  var cpd = null;
+  var cpd  = null;
+  var plot = null;
+
+  function add_example(config)
+  {
+    if(plot) {
+      plot = null;
+      $('#cpd_viz').empty();
+    }
+
+    cpd.clear();
+    cpd.addCustomConfig(config);
+  }
 </script>
 
 
 Examples:
 <ul>
-  <li> <button onclick='cpd.clear(); cpd.addCustomConfig(ex_reddit_2008)'>Reddit-2008</button> </li>
-  <li> <button onclick='cpd.clear(); cpd.addCustomConfig(ex_enron)'>Enron</button> </li>
+  <li> <button onclick='add_example(ex_reddit_2008)'>Reddit-2008</button> </li>
+  <li> <button onclick='add_example(ex_enron)'>Enron</button> </li>
 </ul>
 
 
@@ -49,7 +61,7 @@ Examples:
     cpd = new CPDData('cpd_build');
 
     $('#plotbtn').bind('click', function() {
-      var plot = new CPDDisplay(cpd, 'cpd_viz')
+      plot = new CPDDisplay(cpd, 'cpd_viz')
     });
   });
 </script>
