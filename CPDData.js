@@ -122,6 +122,23 @@ class CPDData
     }
   }
 
+  delMode(modeIdx)
+  {
+    console.log('Removing mode ' + modeIdx);
+
+    if(modeIdx > this.numModes) {
+      alert('Cannot remove mode ' + modeIdx + '. Have only' + this.numModes+'.');
+      return;
+    }
+
+    this.names   = this.names.splice(modeIdx, 1);
+    this.maps    = this.maps.splice(modeIdx, 1);
+    this.factors = this.factors.splice(modeIdx, 1);
+
+    this.numModes--;
+    this._renderModeTable();
+  }
+
 
 
 
@@ -209,23 +226,36 @@ class CPDData
   // TODO: this shouldn't clear the table each time..
   _renderModeTable()
   {
+    var self = this;
+
     // grab the table body
     var tbl_body = $(this.divName + ' > .cpd_tbl > tbody')[0];
 
     // clear the table
     $(tbl_body).children().remove();
 
-    // Add modes
-    for(var mode = 0; mode < this.numModes; ++mode) {
-      var tr_string = '<tr>';
-      tr_string += '<td>' + this.names[mode] + '</td>';
-      tr_string += '<td>' + this.factors[mode].length + '</td>';
-      tr_string += '<td>' + 0 + '</td>';
-      tr_string += '<td>' + 0 + '</td>';
-      tr_string += '<td> <input type="button" onclick="return false;" value="x"> </td>';
-      tr_string += '</tr>';
-      $(tbl_body).append(tr_string);
+    // A silly array [0 .. numModes) that lets us use forEach(). The reason we
+    // want forEach() is to give each iteration its own variable scope
+    // (closure), which lets us bind ids/buttons to iterations.
+    var tbl_rows = new Array(this.numModes);
+    for(var m=0; m < this.numModes; ++m) {
+      tbl_rows[m] = self;
     }
+
+    // Add modes
+    tbl_rows.forEach(function(cpd, mode) {
+      var tr_string = '<tr>';
+      tr_string += '<td>' + cpd.names[mode] + '</td>';
+      tr_string += '<td>' + cpd.factors[mode].length + '</td>';
+      tr_string += '<td>' + 0 + '</td>';
+      tr_string += '<td>' + 0 + '</td>';
+      tr_string += '<td> <input type="button" id="rmMode' + mode + '" value="x"> </td>';
+      tr_string += '</tr>';
+
+      $(tbl_body).append(tr_string);
+      $(cpd.divName + ' #rmMode' + mode).bind('click', function() {
+          cpd.delMode(mode)});
+    });
   }
 
 
