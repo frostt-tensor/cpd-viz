@@ -164,7 +164,7 @@ class CPDData
     this.names.splice(modeIdx, 1);
     this.maps.splice(modeIdx, 1);
     this.factors.splice(modeIdx, 1);
-    this.mods.split(modeIdx, 1);
+    this.mods.splice(modeIdx, 1);
 
     this.numModes--;
 
