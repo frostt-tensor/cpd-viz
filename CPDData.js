@@ -48,8 +48,8 @@ function parse_matrix(url, callback)
 // Possible modifiers for modes.
 //
 var modeModifiers = [
-  { mod: 'temporal' }, // The data is temporal, meaning it should not be sorted
-  { mod: 'prune'}      // Discrete values which are expected to be sparse
+  { mod: 'sequential' }, // The data is sequential, meaning it should not be sorted
+  { mod: 'prune'}        // Discrete values which are expected to be sparse
 ];
 
 

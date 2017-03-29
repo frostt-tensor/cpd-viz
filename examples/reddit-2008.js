@@ -12,7 +12,7 @@ var ex_reddit_2008 = {
       name: 'dates',
       map_url: reddit_host_url + 'mode-1-dates.map',
       matrix_url: reddit_host_url + 'mode1.mat',
-      modifiers: { temporal : true }
+      modifiers: { sequential : true }
     },
     { // users
       name: 'users',

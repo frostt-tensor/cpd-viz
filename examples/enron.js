@@ -30,7 +30,7 @@ var ex_enron= {
       name: 'dates',
       matrix_url: enron_host_url + 'mode4.mat',
       map_url: enron_host_url + 'mode-4-dates.map',
-      modifiers: { temporal : true}
+      modifiers: { sequential : true}
     }
   ],
 };

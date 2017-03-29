@@ -202,7 +202,7 @@ class CPDDisplay
       var y_vals = normalize(matvec(x_mode.matrix, y_vec));
 
       var plot_type = 'bar';
-      if(x_mode.mods.temporal) {
+      if(x_mode.mods.sequential) {
         plot_type = 'scatter';
       }
 
